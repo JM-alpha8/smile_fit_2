@@ -56,28 +56,5 @@ app.config.update(
     MAIL_DEFAULT_SENDER='your_email@gmail.com'
 )
 
-mail = Mail(app)
-
-@app.route('/send_email', methods=['POST'])
-def send_email():
-    data = request.json
-    email = data['email']
-    images = data['images']
-
-    msg = Message('SMILE FIT 결과 이미지', recipients=[email])
-    msg.body = "첨부된 사진은 SMILE FIT에서 촬영된 결과입니다."
-
-    for i, img_data_url in enumerate(images):
-        header, base64_data = img_data_url.split(',', 1)
-        img_bytes = base64.b64decode(base64_data)
-        msg.attach(f'image_{i+1}.png', 'image/png', img_bytes)
-
-    try:
-        mail.send(msg)
-        return jsonify({'message': '✅ 이메일 전송 완료!'})
-    except Exception as e:
-        print("이메일 전송 오류:", e)
-        return jsonify({'message': '❌ 이메일 전송 실패'}), 500
-
 if __name__ == "__main__":
     app.run(debug=True)

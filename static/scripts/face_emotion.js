@@ -58,7 +58,7 @@ async function loadNextEmotionImage() {
   currentImageIndex = emotionImageIndices[Math.floor(Math.random() * emotionImageIndices.length)];
   const imageUrl = `${baseImagePath}e${currentImageIndex}.png`;
   emotionReferenceImg.src = imageUrl;
-  emotionRefEmotionDisplay.innerText = "기준 감정: 분석 중...";
+  emotionRefEmotionDisplay.innerText = "기준 감정: -";
   emotionUserEmotionDisplay.innerText = "당신 감정: -";
   emotionScoreDisplay.innerText = "이번 점수: -";
 }
@@ -79,11 +79,26 @@ async function recognizeExpressions(img) {
 }
 
 async function handleEmotionCapture() {
+
+    if (!emotionReferenceImg.complete) {
+    console.log("⏳ 기준 이미지 로딩 대기 중...");
+    await new Promise(resolve => {
+      emotionReferenceImg.onload = () => {
+        console.log("✅ 기준 이미지 로딩 완료");
+        resolve();
+      };
+    });
+  }
+
   const refResult = await recognizeExpressions(emotionReferenceImg);
   const userResult = await recognizeExpressions(emotionVideo);
+
+  console.log("📌 기준 감정:", refResult?.expressions);
+  console.log("📌 사용자 감정:", userResult?.expressions);
+
   if (!refResult || !userResult) {
     emotionScoreDisplay.innerText = "이번 점수: 분석 실패";
-    await loadNextEmotionImage(); // ✅ 이 줄 추가!
+    await loadNextEmotionImage(); 
     return;
     }
 
@@ -99,7 +114,9 @@ async function handleEmotionCapture() {
   emotionUserEmotionDisplay.innerHTML = `당신 감정: <b>${getTopEmotion(userResult.expressions)}</b>`;
   emotionRefEmotionDisplay.innerHTML = `기준 감정: <b>${getTopEmotion(refResult.expressions)}</b>`;
 
-  await loadNextEmotionImage();
+  setTimeout(() => {
+    loadNextEmotionImage();  
+  }, 2000); 
 }
 
 export async function setupEmotionMode() {
