@@ -1,7 +1,4 @@
-from flask import Flask, send_from_directory, request, jsonify, render_template
-from flask_mail import Mail, Message
-import base64
-import numpy as np
+from flask import Flask, send_from_directory, render_template
 
 
 app = Flask(__name__)
