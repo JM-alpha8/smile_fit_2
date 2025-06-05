@@ -1,43 +1,19 @@
-let faceMeshLoaded = false;
-let currentSessionTotalScore_Follow = 0;
-let userA_Landmarks = null;
-let userB_Landmarks = null;
-let teacherA_Landmarks = null;
-let teacherB_Landmarks = null;
+// face_follow.js - 표정 따라하기 모드 JS (MediaPipe 기반)
 
-const followVideo = document.getElementById("follow-video");
-const followImageA = document.getElementById("follow-imageA");
-const followImageB = document.getElementById("follow-imageB");
-const followCaptureABtn = document.getElementById("follow-captureA_Btn");
-const followCaptureBBtn = document.getElementById("follow-captureB_Btn");
-const followScoreDisplay = document.getElementById("follow-scoreDisplay");
-const followGuideCanvas = document.getElementById("follow-guideCanvas");
-const followSessionDisplay = document.getElementById("session-total-score-display-follow");
+let currentSessionTotalScore = 0;
+let currentImageIndex = 1;
+const totalImages = 50;
+const baseImagePath = "/static/images/f_game/";
 
-const baseImagePathFollow = "/static/images/f_game/";
-let currentFollowIndex = 0;
+let faceMesh = null;
+let teacherA = [], teacherB = [], userA = [], userB = [];
 
-async function loadFollowModels() {
-  if (faceMeshLoaded) return true;
-  const model = new FaceMesh({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-  model.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-  await model.initialize();
-  faceMeshLoaded = true;
-  return model;
+export function init() {
+  loadUnityGame();
+  setTimeout(() => setupFollowMode(), 300);
 }
 
-async function startFollowCamera(faceMesh) {
-  const camera = new Camera(followVideo, {
-    onFrame: async () => {
-      await faceMesh.send({ image: followVideo });
-    },
-    width: 300,
-    height: 225
-  });
-  await camera.start();
-}
-
-function drawFollowGuide(canvas, video) {
+function drawGuideEllipse(canvas, video) {
   const ctx = canvas.getContext("2d");
   canvas.width = video.clientWidth;
   canvas.height = video.clientHeight;
@@ -49,136 +25,270 @@ function drawFollowGuide(canvas, video) {
   ctx.stroke();
 }
 
-async function loadFollowImages() {
-  currentFollowIndex = Math.floor(Math.random() * 25) * 2 + 1;
-  followImageA.src = `${baseImagePathFollow}${currentFollowIndex}.png`;
-  followImageB.src = `${baseImagePathFollow}${currentFollowIndex + 1}.png`;
-  followScoreDisplay.innerText = "이번 점수: -";
+async function startFollowCamera(videoElement, callbackWhenReady) {
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  videoElement.srcObject = stream;
+  videoElement.onloadedmetadata = () => {
+    videoElement.play();
+    callbackWhenReady?.();
+  };
 }
 
-function normalize(landmarks) {
-  const leftEye = landmarks[33];
-  const rightEye = landmarks[263];
-  const centerX = (leftEye.x + rightEye.x) / 2;
-  const centerY = (leftEye.y + rightEye.y) / 2;
-  const scale = Math.hypot(leftEye.x - rightEye.x, leftEye.y - rightEye.y) || 1;
-  return landmarks.map(p => ({ x: (p.x - centerX) / scale, y: (p.y - centerY) / scale, z: (p.z || 0) / scale }));
-}
-
-function computeDelta(landA, landB) {
-  return landA.map((p, i) => ({ x: p.x - landB[i].x, y: p.y - landB[i].y, z: p.z - landB[i].z }));
-}
-
-function computeScore(delta1, delta2) {
-  const error = delta1.reduce((sum, d1, i) => {
-    const d2 = delta2[i];
-    return sum + Math.sqrt((d1.x - d2.x) ** 2 + (d1.y - d2.y) ** 2 + (d1.z - d2.z) ** 2);
-  }, 0);
-  const avgError = error / delta1.length;
-  return Math.max(1, Math.min(10, Math.round(10 - avgError * 50)));
+function waitForImageLoad(img) {
+  return new Promise((resolve) => {
+    if (img.complete && img.naturalWidth > 0) {
+      resolve();
+    } else {
+      img.onload = () => resolve();
+      img.onerror = () => resolve(); // 실패해도 resolve해서 안 멈추게
+    }
+  });
 }
 
 export async function setupFollowMode() {
-  const faceMesh = await loadFollowModels();
-  faceMesh.onResults(async results => {
-    if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-      latestLandmarks = structuredClone(results.multiFaceLandmarks[0]);
-    }
-  });
+  console.log("[FollowMode] Initializing follow mode...");
 
-  await startFollowCamera(faceMesh);
-  drawFollowGuide(followGuideCanvas, followVideo);
-  await loadFollowImages();
+  const imageA = document.getElementById("follow-imageA");
+  const imageB = document.getElementById("follow-imageB");
+  const video = document.getElementById("follow-video");
+  const canvas = document.getElementById("follow-guideCanvas");
+  const captureABtn = document.getElementById("follow-captureA_Btn");
+  const captureBBtn = document.getElementById("follow-captureB_Btn");
 
-  followCaptureABtn.onclick = () => {
-    if (!latestLandmarks) return alert("얼굴 인식 실패");
-    userA_Landmarks = structuredClone(latestLandmarks);
-    followCaptureABtn.disabled = true;
-    followCaptureBBtn.disabled = false;
-    followScoreDisplay.innerText = "첫 번째 표정 저장됨";
-  };
-
-  followCaptureBBtn.onclick = () => {
-    if (!latestLandmarks || !userA_Landmarks) return alert("얼굴 인식 실패 또는 첫 번째 표정 없음");
-    userB_Landmarks = structuredClone(latestLandmarks);
-
-    // 임시 기준 이미지 랜드마크 (향후 static 분석으로 교체 가능)
-    teacherA_Landmarks = userA_Landmarks;
-    teacherB_Landmarks = userB_Landmarks.map(p => ({ x: p.x * 1.02, y: p.y * 1.02, z: p.z }));
-
-    const normTeacherA = normalize(teacherA_Landmarks);
-    const normTeacherB = normalize(teacherB_Landmarks);
-    const normUserA = normalize(userA_Landmarks);
-    const normUserB = normalize(userB_Landmarks);
-
-    const deltaT = computeDelta(normTeacherB, normTeacherA);
-    const deltaU = computeDelta(normUserB, normUserA);
-    const score = computeScore(deltaT, deltaU);
-
-    followScoreDisplay.innerHTML = `이번 점수: <b>${score} / 10</b>`;
-    currentSessionTotalScore_Follow += score;
-    followSessionDisplay.innerText = `총 점수: ${currentSessionTotalScore_Follow}`;
-
-    followCaptureABtn.disabled = false;
-    followCaptureBBtn.disabled = true;
-    loadFollowImages();
-  };
-}
-
-import { loadUnityGame } from './unity_loader.js';
-
-export async function init() {
-  console.log("🧠 표정 따라하기 모드 init()");
-  await loadUnityGame();
-
-  const loaded = await loadFollowModels();
-  if (!loaded) return;
-
-  const videoReady = await startVideoForFollowMode();
-  if (!videoReady) return;
-
-  await setupSingleFollowExercise_Follow();
-
-  const btnA = document.getElementById('follow-captureA_Btn');
-  const btnB = document.getElementById('follow-captureB_Btn');
-  if (btnA && btnB) {
-    btnA.removeEventListener('click', processFollowExpression_CaptureA);
-    btnA.addEventListener('click', processFollowExpression_CaptureA);
-    btnB.removeEventListener('click', processFollowExpression_CaptureB);
-    btnB.addEventListener('click', processFollowExpression_CaptureB);
+  if (!imageA || !imageB || !video || !canvas || !captureABtn || !captureBBtn) {
+    console.error("[FollowMode] 필수 요소가 누락되었습니다.");
+    return;
   }
+
+  faceMesh = new FaceMesh({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
+  faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5 });
+  await faceMesh.initialize();
+
+  await setReferenceImages();
+
+  await waitForImageLoad(imageA);
+  await waitForImageLoad(imageB);
+
+  teacherA = await extractLandmarks(imageA);
+  teacherB = await extractLandmarks(imageB);
+
+  captureABtn.disabled = false;
+  captureBBtn.disabled = true;
+
+  captureABtn.onclick = async () => {
+    userA = await captureAndExtract(video);
+    captureABtn.disabled = true;
+    captureBBtn.disabled = false;
+  };
+
+  captureBBtn.onclick = async () => {
+    userB = await captureAndExtract(video);
+    captureBBtn.disabled = true;
+    calculateScore();
+  };
 }
 
-export function closeFacialModal(mode = null, reason = "manual_close") {
-  const modal = document.getElementById("facial-recognition-modal");
-  if (modal) modal.style.display = "none";
-
-  const score = currentSessionTotalScore ?? 0;
-
-  // ✅ Unity로 점수 또는 중단 메시지 전송
-  if (window.unityGameInstance) {
-    if (reason.startsWith("session_ended_by_unity")) {
-      console.log("✅ Unity로 최종 점수 전송:", score);
-      window.unityGameInstance.SendMessage('CostManagerObject', 'ReceiveFacialScore', score);
+function waitForVideoReady(video, callback) {
+  const check = () => {
+    if (video.readyState >= 2) {
+      callback();
     } else {
-      console.log("🛑 Unity에 운동 중단 알림 전송");
-      window.unityGameInstance.SendMessage('CostManagerObject', 'FacialExerciseAborted', 0);
+      setTimeout(check, 100);
     }
-  }
-
-  // ✅ 캠 스트림 정리
-  const video = (mode === 'emotion_expression')
-    ? document.getElementById("emotion-video")
-    : document.getElementById("follow-video");
-
-  if (video && video.srcObject) {
-    video.srcObject.getTracks().forEach(track => track.stop());
-    video.srcObject = null;
-  }
-
-  // ✅ 점수 초기화
-  currentSessionTotalScore = 0;
+  };
+  check();
 }
 
-window.closeFacialModal = closeFacialModal;
+async function setReferenceImages() {
+  const imageA = document.getElementById("follow-imageA");
+  const imageB = document.getElementById("follow-imageB");
+  imageA.src = `${baseImagePath}${currentImageIndex}.png`;
+  imageB.src = `${baseImagePath}${currentImageIndex + 1}.png`;
+}
+
+function calculateScore() {
+  const normTeacherA = normalizeLandmarksByMidpoint(teacherA);
+  const normTeacherB = normalizeLandmarksByMidpoint(teacherB);
+  const normUserA = normalizeLandmarksByMidpoint(userA);
+  const normUserB = normalizeLandmarksByMidpoint(userB);
+
+  const landmarkPairs = {
+    "입꼬리(우)": [291, 446],
+    "입꼬리(좌)": [61, 226],
+    "입벌림": [1, 152],
+    "눈썹(우)": [334, 386],
+    "눈썹(좌)": [105, 159],
+    "눈감기(우)": [386, 374],
+    "눈감기(좌)": [159, 145],
+    "찡그리기(우)": [285, 437],
+    "찡그리기(좌)": [217, 55],
+    "입술오므리기": [61, 291],
+  };
+
+  const epsilon = 0.001;
+  let totalScore = 0;
+  let count = 0;
+
+  for (const [name, [i1, i2]] of Object.entries(landmarkPairs)) {
+      if (
+        !normTeacherA[i1] || !normTeacherA[i2] ||
+        !normTeacherB[i1] || !normTeacherB[i2] ||
+        !normUserA[i1] || !normUserA[i2] ||
+        !normUserB[i1] || !normUserB[i2]
+      ) {
+        console.warn(`[${name}] 랜드마크 누락 - 건너뜀`);
+        continue;
+      }
+    const teacherDist = calcDistance(normTeacherB[i1], normTeacherB[i2]) - calcDistance(normTeacherA[i1], normTeacherA[i2]);
+    const userDist = calcDistance(normUserB[i1], normUserB[i2]) - calcDistance(normUserA[i1], normUserA[i2]);
+
+    const diff = Math.abs(teacherDist - userDist);
+    const sim = 1 - diff / ((Math.abs(teacherDist) + epsilon) * 3);
+    const score = Math.max(0, Math.min(1, sim)) * 10;
+
+    totalScore += score;
+    count++;
+  }
+
+  const avgScore = Math.round(totalScore / count);
+
+  currentSessionTotalScore += avgScore;
+
+  const scoreDisplay = document.getElementById("follow-scoreDisplay");
+  const totalScoreDisplay = document.getElementById("session-total-score-display-follow");
+  if (scoreDisplay) scoreDisplay.innerHTML = `이번 점수: <b>${avgScore} / 10</b>`;
+  if (totalScoreDisplay) totalScoreDisplay.innerText = `총 점수: ${currentSessionTotalScore}`;
+
+  currentImageIndex += 2;
+  setTimeout(() => setupFollowMode(), 1000);
+}
+
+function calcDistance(pt1, pt2) {
+  return Math.hypot(pt1[0] - pt2[0], pt1[1] - pt2[1]);
+}
+
+function normalizeLandmarksByMidpoint(landmarks) {
+  if (!landmarks || landmarks.length < 200) return landmarks; // fallback
+  const left = landmarks[168];
+  const right = landmarks[5];
+  const baseDist = calcDistance(left, right) || 1;
+  return landmarks.map(([x, y]) => [x / baseDist, y / baseDist]);
+}
+
+
+async function extractLandmarks(imgElement) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = imgElement.naturalWidth || 300;
+    canvas.height = imgElement.naturalHeight || 225;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(imgElement, 0, 0);
+
+    faceMesh.onResults((results) => {
+      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+        const landmarks = results.multiFaceLandmarks[0].map(pt => [pt.x, pt.y]);
+        resolve(landmarks);
+      } else {
+        resolve([]);
+      }
+    });
+
+    faceMesh.send({ image: canvas });
+  });
+}
+
+async function captureAndExtract(videoElement) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = videoElement.videoWidth;
+    canvas.height = videoElement.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(videoElement, 0, 0);
+
+    faceMesh.onResults((results) => {
+      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+        const landmarks = results.multiFaceLandmarks[0].map(pt => [pt.x, pt.y]);
+        resolve(landmarks);
+      } else {
+        resolve([]);
+      }
+    });
+
+    faceMesh.send({ image: canvas });
+  });
+}
+
+import { loadUnityGame } from "./unity_loader.js";
+
+    export async function ShowFacialRecognitionUI_JS(modeFromUnity, attempt = 1) {
+      console.log(`[follow] ShowFacialRecognitionUI_JS called. Mode: ${modeFromUnity}, Attempt: ${attempt}`);
+
+       // 점수 초기화
+      currentSessionTotalScore = 0;
+      let sessionTotalScoreDisplayElement = document.getElementById('session-total-score-display-follow');
+      if (sessionTotalScoreDisplayElement) sessionTotalScoreDisplayElement.innerText = '총 점수: 0';
+
+      const modal = document.getElementById('facial-recognition-modal');
+      const followVideo = document.getElementById("follow-video");
+      const followGuideCanvas = document.getElementById("follow-guideCanvas");
+      const followModeUI = document.getElementById('follow-mode-ui');
+      const guideCanvas = document.getElementById('follow-guideCanvas');
+      if (!modal || !followModeUI) return;
+
+      modal.style.display = 'flex';
+      followModeUI.style.display = 'block';
+      if (guideCanvas) guideCanvas.style.display = 'block';
+
+      // 캠 시작
+      await startFollowCamera(followVideo, () => {
+        console.log("팔로우 모드 캠 시작됨");
+
+        // 🎯 비디오가 제대로 그려진 뒤 캔버스 가이드라인 그리기
+        waitForVideoReady(followVideo, () => {
+          drawGuideEllipse(followGuideCanvas, followVideo);
+        });
+      });
+
+      // 첫 표정 세팅
+      await setReferenceImages();
+
+      const btn = document.getElementById('follow-captureBtn');
+      btn?.removeEventListener('click', handleFollowCapture);
+      btn?.addEventListener('click', handleFollowCapture);
+    }
+
+    export function closeFacialModal(mode = null, reason = "manual_close") {
+      const modal = document.getElementById("facial-recognition-modal");
+      if (modal) modal.style.display = "none";
+
+      const score = currentSessionTotalScore ?? 0;
+
+      // ✅ Unity로 점수 또는 중단 메시지 전송
+      if (window.unityGameInstance) {
+        if (reason.startsWith("session_ended_by_unity")) {
+          console.log("✅ Unity로 최종 점수 전송:", score);
+          window.unityGameInstance.SendMessage('CostManagerObject', 'ReceiveFacialScore', score);
+        } else {
+          console.log("🛑 Unity에 운동 중단 알림 전송");
+          window.unityGameInstance.SendMessage('CostManagerObject', 'FacialExerciseAborted', 0);
+        }
+      }
+
+      // ✅ 캠 스트림 정리
+      const video = (mode === 'follow_expression')
+        ? document.getElementById("emotion-video")
+        : document.getElementById("follow-video");
+
+      if (video && video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+      }
+
+      // ✅ 점수 초기화
+      currentSessionTotalScore = 0;
+    }
+
+// Unity에서 호출 가능하도록 등록
 window.ShowFacialRecognitionUI_JS = ShowFacialRecognitionUI_JS;
+window.closeFacialModal = closeFacialModal;
+

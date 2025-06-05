@@ -1,6 +1,6 @@
 // ✅ 감정 표현하기 모드: face_emotion.js
 
-let currentSessionTotalScore = 0;
+// let currentSessionTotalScore = 0;
 let sessionTotalScoreDisplayElement = null;
 
 let faceApiModelLoaded_Emotion = false;
@@ -16,6 +16,7 @@ const sessionTotalDisplay = document.getElementById("session-total-score-display
 const baseImagePath = "/static/images/e_game/";
 const emotionImageIndices = Array.from({ length: 50 }, (_, i) => i + 1);
 let currentImageIndex = 0;
+
 
 async function startVideoForEmotionMode(videoElement, callbackWhenReady) {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -109,6 +110,18 @@ export async function setupEmotionMode() {
   emotionCaptureBtn.addEventListener("click", handleEmotionCapture);
 }
 
+function waitForVideoReady(video, callback) {
+  const check = () => {
+    if (video.videoWidth > 0 && video.videoHeight > 0) {
+      callback();
+    } else {
+      requestAnimationFrame(check);
+    }
+  };
+  check();
+}
+
+//========================================================================================================//
 
 import { loadUnityGame } from './unity_loader.js';
 
@@ -186,6 +199,11 @@ export async function ShowFacialRecognitionUI_JS(modeFromUnity, attempt = 1) {
   // 캠 시작
   await startVideoForEmotionMode(emotionVideo, () => {
     console.log("🎥 감정모드 캠 시작됨");
+
+    // 🎯 비디오가 제대로 그려진 뒤 캔버스 가이드라인 그리기
+    waitForVideoReady(emotionVideo, () => {
+      drawGuideEllipse(emotionGuideCanvas, emotionVideo);
+    });
   });
 
   // 첫 표정 세팅
@@ -198,8 +216,6 @@ export async function ShowFacialRecognitionUI_JS(modeFromUnity, attempt = 1) {
 
 
 // ✅ 전역 등록
+
 window.ShowFacialRecognitionUI_JS = ShowFacialRecognitionUI_JS;
-
-
 window.closeFacialModal = closeFacialModal;
-window.ShowFacialRecognitionUI_JS = ShowFacialRecognitionUI_JS;

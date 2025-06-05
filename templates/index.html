@@ -197,12 +197,20 @@
     </div>
   </div>
 
-<a href="#" class="home-button" onclick="loadPage('index'); return false;">HOME</a>
+
+   <a href="#" class="home-button" onclick="forceReload(); return false;">HOME</a>
 
   <script>
+
+  function forceReload() {
+    const base = window.location.origin + '/';
+    window.location.href = base + '?force=' + Date.now();
+  }
+
     window.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('loaded');
       loadPage('index');
+      setupHomeButtonHandler();
     });
 
     function metalClickSound() {
@@ -229,14 +237,14 @@
       'focus_fit': '/pages/focus_fit.html',
       'complex_feedback': '/pages/complex_feedback.html',
       'focus_feedback': '/pages/focus_feedback.html',
-      'face_emotion': '/tower_defense_game.html?mode=emotion_expression',
-      'face_follow': '/tower_defense_game.html?mode=follow_expression'
+      'face_emotion': '/pages/face_emotion.html',
+      'face_follow': '/pages/face_follow.html'
     };
 
     let currentModule = null;
     const pageCache = new Map();
 
-async function loadPage(route) {
+async function loadPage(route) {  
   const path = routes[route];
   if (!path) return;
 
@@ -288,9 +296,6 @@ async function loadPage(route) {
   }, 400);
 }
 
-
-
-
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
@@ -300,9 +305,5 @@ async function loadPage(route) {
       });
     }
   </script>
- 
-  
-
-
 </body>
 </html>
