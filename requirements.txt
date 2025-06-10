@@ -5,3 +5,4 @@ opencv-contrib-python
 pillow
 Werkzeug
 gunicorn
+python-dotenv
