@@ -6,3 +6,4 @@ pillow
 Werkzeug
 gunicorn
 python-dotenv
+google-generativeai
