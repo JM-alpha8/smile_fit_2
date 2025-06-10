@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMILE FIT 소개</title>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100dvh; 
+    font-family: 'SUIT', sans-serif;
+    background-color: white;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+  }
+
+ header {
+    height: 14vh;
+    background: linear-gradient(90deg, #69b7ff, #a17fff);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+    header h1 {
+      font-size: 2.25rem;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 30px 0;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 4px 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    p, ul {
+      line-height: 1.8;
+      margin: 0;
+      padding: 0;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+.section-title {
+  font-size: 1.1rem;        
+  font-weight: 600;          
+  text-decoration: underline;
+  margin: 20px 0 8px;       
+}
+
+    @media (min-width: 1024px) {
+      main {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 4rem;
+      }
+    }
+
+   h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 4px 0;
+      padding-bottom: 0px;
+      display: inline-block;
+      line-height: 0;
+    }
+
+    .text-section {
+      flex: 0.5;
+      text-align: center;
+       align-items: center;
+    }
+
+    .image-section {
+      flex: 0.5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right:0;
+    }
+
+    .image-section img {
+      max-width: 100%;
+      margin-top: 5rem;
+      margin-right:0;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 1.25rem;
+      margin-top: 0.5rem;
+      text-align: left;
+      display: inline-block;
+    }
+
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: #718096; /* Tailwind text-gray-500 대체 */
+    }
+
+    .section-title {
+  font-size: 1.1rem;        /* h2와 동일한 크기 */
+  font-weight: 600;          /* 굵게 */
+  text-decoration: underline;/* 밑줄 */
+  margin: 50px 0 8px;        /* 위, 아래 여백 */
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- 헤더 -->
+  <header>
+    <h1>SMILE FIT</h1>
+  </header>
+
+  <!-- 메인: 좌우 분할 -->
+  <main>
+
+    <!-- 텍스트 영역 -->
+    <div class="text-section">
+      <section>
+        <h1>표정의 힘, 얼굴 근육을 깨우다</h1>
+        <p class="section-title">About</p>
+        <p>
+          SMILE FIT은 AI 기반 안면 재활 훈련 웹앱입니다.  
+          표정 따라하기와 감정 표현을 통해 얼굴 근육을 자극하고,  
+          실시간 분석과 피드백으로 효과적인 훈련을 도와줍니다.  
+          "웃는 얼굴이 건강을 만든다"는 믿음 아래  
+          일상 속 자연스러운 표정 운동을 가능하게 합니다.
+        </p>
+      </section>
+
+      <section style="margin-bottom: 1.5rem;">
+        <p class="section-title">Main Features</p>
+        <ul>
+          <li><strong>게임 모드</strong> – 표정 따라하기, 감정 표현 게임</li>
+          <li><strong>재활 모드</strong> – 집중/복합 운동 훈련과 피드백</li>
+          <li><strong>시각적 리포트</strong> – 근육 사용량, TOP5, 종합 점수</li>
+        </ul>
+      </section>
+
+      <section style="margin-bottom: 1.5rem;">
+        <p class="section-title">Technology Stack</p>
+        <p>FaceMesh, Face API, TensorFlow, Flask, JavaScript (SPA), PWA</p>
+      </section>
+
+      <section>
+        <p class="section-title">Our Vision</p>
+        <p>
+          SMILE FIT은 단순한 훈련 도구를 넘어  
+          표정 습관 개선과 자존감 회복을 돕는 AI 코치입니다.  
+          꾸준한 훈련으로 웃는 얼굴을 되찾는 여정,  
+          지금 함께 시작해보세요.
+        </p>
+      </section>
+    </div>
+
+    <!-- 이미지 영역 -->
+    <div class="image-section">
+      <img src="static/images/smilefit-hero.png" alt="Smile Fit Image" />
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2025 SMILE FIT. All rights reserved.
+  </footer>
+
+</body>
+</html>

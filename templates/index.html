@@ -129,6 +129,22 @@
     font-size: 14px;
   }
 
+.about-button {
+  position: fixed;
+  top: 10px;
+  right: 16px;
+  background: #69b7ff;
+  color: white;
+  padding: 4px 10px;
+  font-weight: bold;
+  border-radius: 6px;
+  box-shadow: 0 0 8px #69b7ff;
+  z-index: 999;
+  text-decoration: none;
+  font-size: 14px;
+  display: none; /* 기본은 안보임 */
+}
+
   /* 💻 데스크탑 대응 */
   @media screen and (min-width: 1024px), (hover: hover) and (pointer: fine) {
     header {
@@ -174,6 +190,16 @@
       text-decoration: none;
       font-size: 20px;
     }
+
+@media screen and (min-width: 1024px) {
+  .about-button {
+    top: 24px;
+    right: 24px;
+    font-size: 20px;
+    padding: 8px 16px;
+  }
+}
+
   }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -197,6 +223,7 @@
     </div>
   </div>
 
+   <a href="#" id="about-button" class="about-button" onclick="loadPage('about'); return false;">ABOUT</a>
 
    <a href="#" class="home-button" onclick="forceReload(); return false;">HOME</a>
 
@@ -210,8 +237,19 @@
     window.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('loaded');
 
-      setupHomeButtonHandler();
-    });
+  const path = location.pathname;
+  const aboutBtn = document.getElementById("about-button");
+  if (aboutBtn) {
+    if (path === "/" || path.includes("index")) {
+      aboutBtn.style.display = "inline-block";
+    } else {
+      aboutBtn.style.display = "none";
+    }
+  }
+
+  setupHomeButtonHandler();
+});
+
 
     function metalClickSound() {
       const sound = document.getElementById('metal_click');
@@ -238,7 +276,8 @@
       'complex_feedback': '/pages/complex_feedback.html',
       'focus_feedback': '/pages/focus_feedback.html',
       'face_emotion': '/pages/face_emotion.html',
-      'face_follow': '/pages/face_follow.html'
+      'face_follow': '/pages/face_follow.html',
+      "about": "/pages/about.html"
     };
 
     let currentModule = null;
@@ -263,6 +302,15 @@ async function loadPage(route) {
       console.warn(`⚠️ ${route}.js 없음 또는 import 실패`, e);
     }
   }
+
+const aboutBtn = document.getElementById("about-button");
+if (aboutBtn) {
+  if (route === "index") {
+    aboutBtn.style.display = "inline-block";
+  } else {
+    aboutBtn.style.display = "none";
+  }
+}
 
   setTimeout(async () => {
     try {
