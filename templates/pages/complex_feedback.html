@@ -165,7 +165,7 @@
       width: 160px;
     }
 
-    @media screen and (min-width: 1024px), (hover: hover) and (pointer: fine) {
+    @media screen and (min-width: 1024px) {
 
       header {
         height: 100px;
@@ -211,33 +211,29 @@
   }
 
   @media screen and (max-width: 768px) {
-  .row-box {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 16px;
-    max-width: 100%;
-  }
-
-  .feedback-box {
-    flex: 1 1 40%;
-    min-width: 280px;
-    max-width: 500px;
-    width: 100%;
-  }
-
-.feedback-box:first-child {
-  flex: 0 0 auto; 
-  width: 300px;
-  max-width: 90vw; 
+.row-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  padding: 24px 0;
 }
 
-.feedback-box:last-child {
-  flex: 1 1 auto;  /* 남는 공간만큼 확장 또는 축소 */
-  min-width: 160px; /* 너무 작아지지 않게 방지 */
+
+    
+.feedback-box {
+  width: 80%;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 
 .image-row {
   display: flex;
@@ -293,6 +289,30 @@
     font-size: 15px;
     padding: 10px 20px;
   }
+
+.pie-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.pie-container canvas {
+  width: 120px;
+  height: 120px;
+}
+
+.pie-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  max-width: 160px;
+}
+
 } 
   
   </style>
