@@ -141,6 +141,24 @@
           z-index: 0;
         }
 
+@media (max-width: 768px) {
+  #unity-container {
+    width: 100vw;
+    height: auto;
+  }
+
+  #unity-canvas {
+    width: 100vw;
+    height: auto;
+    aspect-ratio: 16 / 10; /* Unity 캔버스 비율 유지 */
+  }
+
+  #unity-footer,
+  #unity-logo-title-footer {
+    display: none; /* 필요 없으면 숨김 */
+  }
+}
+
     </style>
 </head>
 <body>

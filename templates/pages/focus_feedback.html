@@ -216,6 +216,59 @@
     
   }
 
+@media screen and (max-width: 768px) {
+ 
+      .report {
+      display: flex;
+      justify-content: center;
+    }
+
+    .report-section {
+     width: 80%;
+    }
+ 
+  .row-box {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .feedback-box,
+  .feedback-photo,
+  .report-section {
+    width: 80vw !important;
+    max-width: 80vw !important;
+    min-width: auto !important;
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .name-input-row {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 80vw;
+    margin: 20px auto;
+  }
+
+  .name-input-row input {
+    width: 100%;
+  }
+
+  #analyze-btn {
+    width: 80vw;
+    max-width: 300px;
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+}
+
     
   </style>
 </head>
