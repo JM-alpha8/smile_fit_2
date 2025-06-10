@@ -5,11 +5,11 @@ export function init() {
 
   const emmaBtn = document.querySelector('[data-teacher="emma"]');
   const oliviaBtn = document.querySelector('[data-teacher="olivia"]');
-  const sophiaBtn = document.querySelector('[data-teacher="sophia"]');
+  const mikeBtn = document.querySelector('[data-teacher="mike"]');
 
   if (emmaBtn) emmaBtn.onclick = () => selectTeacher('emma');
   if (oliviaBtn) oliviaBtn.onclick = () => selectTeacher('olivia');
-  if (sophiaBtn) sophiaBtn.onclick = () => selectTeacher('sophia');
+  if (mikeBtn) mikeBtn.onclick = () => selectTeacher('mike');
 
   const homeBtn = document.querySelector('.home-button');
   if (homeBtn) homeBtn.onclick = (e) => {

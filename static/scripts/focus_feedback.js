@@ -1,28 +1,28 @@
 const FaceMesh = window.FaceMesh;
 
 const MAX_CHANGES = {
-  "전두근(좌)": 0.136,
-  "전두근(우)": 0.136,
-  "안륜근(좌)": 0.047,
-  "안륜근(우)": 0.047,
-  "추미근": 0.072,
-  "상순비익거근": 0.143,
-  "대관골근(좌)": 0.048,
-  "대관골근(우)": 0.048,
-  "익돌근": 0.09,
-  "상순절치근": 0.017,
-  "협근": 0.017,
+  "전두근(좌)": 0.04,
+  "전두근(우)": 0.04,
+  "안륜근(좌)": 0.013,
+  "안륜근(우)": 0.013,
+  "추미근": 0.04,
+  "상순비익거근": 0.026,
+  "대관골근(좌)": 0.06,
+  "대관골근(우)": 0.06,
+  "익돌근": 0.25,
+  "상순절치근": 0.036,
+  "협근": 0.026,
 };
 
 const MUSCLE_RULES = {
-  "전두근(우)": { points: [334, 386], direction: "increase" },
-  "전두근(좌)": { points: [105, 159], direction: "increase" },
-  "안륜근(우)": { points: [386, 374], direction: "decrease" },
-  "안륜근(좌)": { points: [159, 145], direction: "decrease" },
+  "전두근(좌)": { points: [334, 386], direction: "increase" },
+  "전두근(우)": { points: [105, 159], direction: "increase" },
+  "안륜근(좌)": { points: [386, 374], direction: "decrease" },
+  "안륜근(우)": { points: [159, 145], direction: "decrease" },
   "추미근": { points: [107, 336], direction: "decrease" },
   "상순비익거근": { points: [285, 437], direction: "decrease" },
-  "대관골근(우)": { points: [291, 446], direction: "decrease" },
-  "대관골근(좌)": { points: [61, 226], direction: "decrease" },
+  "대관골근(좌)": { points: [291, 446], direction: "decrease" },
+  "대관골근(우)": { points: [61, 226], direction: "decrease" },
   "익돌근": { points: [1, 152], direction: "increase" },
   "상순절치근": { points: [61, 291], direction: "decrease" },
   "협근": { points: [61, 291], direction: "increase", stable: [13, 14] }
@@ -124,6 +124,7 @@ function computeDist(landmarks, [i1, i2]) {
 // ✅ 메인 함수: 근육별 사용 퍼센트 수치 계산
 export function calculateMuscleUsageScores(neutralLandmarks, expressionLandmarksList) {
   const scores = {};
+  const scale0 = computeDist(neutralLandmarks, [33, 263]);
 
   for (const muscle in MUSCLE_RULES) {
     const rule = MUSCLE_RULES[muscle];
@@ -137,26 +138,32 @@ export function calculateMuscleUsageScores(neutralLandmarks, expressionLandmarks
 
     for (const exprLandmarks of expressionLandmarksList) {
       const dist = computeDist(exprLandmarks, [p1, p2]);
-      let diff = dist - base;
+      const scale = computeDist(exprLandmarks, [33, 263]);
+      let diff = (dist/scale) - (base/scale0);
 
       if (rule.direction === "decrease") diff *= -1;
       if (diff <= 0) continue; // 변화 없음 or 역방향
+      
+      if (muscle.includes("안륜근") && diff < 0.03) continue;
 
-      // 예외: 볼근은 stable 조건 필요
       if (muscle === "협근" && rule.stable) {
         const stableBase = computeDist(neutralLandmarks, rule.stable);
         const stableNow = computeDist(exprLandmarks, rule.stable);
-        if (Math.abs(stableNow - stableBase) > 0.01) continue;
-      }
-
-      // 예외: 구륜근은 입 벌림 영향 제거
+        if (Math.abs(stableNow - stableBase) > 0.01) continue;}
+      
       if (muscle === "상순절치근") {
         const jawDiff = computeDist(exprLandmarks, [14, 1]) - computeDist(neutralLandmarks, [14, 1]);
         const jawMax = MAX_CHANGES["익돌근"] || 1;
-        if (Math.abs(jawDiff) > jawMax / 5) continue;
-      }
+        if (Math.abs(jawDiff) > jawMax / 3) continue;}
 
-      const ratio = Math.min(diff / maxChange, 1);
+      if (muscle.includes("대관골근")) {
+        const centerBase = computeDist(neutralLandmarks, [13, 14]);
+        const centerNow = computeDist(exprLandmarks, [13, 14]);
+        const centerDiff = centerNow - centerBase;
+        if (centerDiff < 0.01) continue;}
+        
+
+      const ratio = Math.min(diff / maxChange / 5, 1);
       total += ratio;
       count++;
     }
@@ -356,9 +363,30 @@ export async function init() {
     renderBarChart("symmetryChart", ["좌측", "우측"], [symmetry.left, symmetry.right]);
     renderBarChart("consistencyChart", ["일관성"], [consistency]);
     renderBarChart("activationChart", ["목표근육 활성율"], [activation]);
-    renderVerticalBarChart("top5Chart", top5.map(m => m[0]), top5.map(m => m[1]));
+    const scaledTop5 = top5.map(([name, score]) => [name, Math.round(score)]);
+    renderVerticalBarChart("top5Chart", scaledTop5.map(m => m[0]), scaledTop5.map(m => m[1]));
     
-    document.getElementById("summary-text").innerHTML = feedback;
+    const gptSummaryBox = document.getElementById("summary-text");
+
+    const response = await fetch("/api/gemini_focus_feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        symmetry,
+        consistency,
+        activationRate: activation,
+        topMuscles: top5.map(([name, score]) => ({ name, score }))
+      })
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      gptSummaryBox.innerHTML = result.feedback.replace(/\n/g, "<br>");
+    } else {
+      const error = await response.json();
+      gptSummaryBox.innerHTML = `❗ Gemini 피드백 실패: ${error.error}`;
+    }
 
     const refImg = `/static/images/expression/${selectedExercise}/${bestIdx + 1}.png`;
     const userImg = userImages[bestIdx];
