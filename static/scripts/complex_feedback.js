@@ -201,28 +201,6 @@ function renderChart(values) {
   });
 }
 
-function generateSummaryFeedback(avgScore, usedMusclesCount) {
-  const lines = [];
-
-  lines.push("오늘도 얼굴 운동 하느라 수고 많았어요! 😊");
-
-  if (usedMusclesCount >= 5) {
-    lines.push("다양한 근육들을 골고루 사용하셨습니다. 👏");
-  } else {
-    lines.push("다음에는 더 다양한 근육들을 운동해 보아요! 💪");
-  }
-
-  if (avgScore >= 80) {
-    lines.push("선생님의 사진을 매우 잘 따라했습니다. 👍");
-  } else {
-    lines.push("다음에는 선생님을 더 비슷하게 따라해 보아요! 😊");
-  }
-
-  lines.push("항상 스마일핏과 함께 즐겁고 활기찬 운동 되시길 바랍니다! 🌟");
-
-  return lines.join("<br><br>");
-}
-
 const pieColors = [
   "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#CCCCCC"
 ];
@@ -343,7 +321,7 @@ fetch("/api/gemini_feedback", {
     document.getElementById("summary-text").innerHTML = "피드백을 불러오지 못했어요. 😢";
   });
 
-  
+
     // ✅ Pie chart용 데이터 준비
     const totalUsage = topMusclesFull.reduce((sum, m) => sum + m.usage, 0);
     const pieData = [];

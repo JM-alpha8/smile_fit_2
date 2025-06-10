@@ -143,19 +143,22 @@
 
 @media (max-width: 768px) {
   #unity-container {
-    width: 100vw;
-    height: auto;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   #unity-canvas {
-    width: 100vw;
-    height: auto;
-    aspect-ratio: 16 / 10; /* Unity 캔버스 비율 유지 */
+    height: 100vh;
+    width: auto;
+    aspect-ratio: 16 / 10;
   }
 
   #unity-footer,
   #unity-logo-title-footer {
-    display: none; /* 필요 없으면 숨김 */
+    display: none;
   }
 }
 

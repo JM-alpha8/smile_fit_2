@@ -221,6 +221,7 @@
       .report {
       display: flex;
       justify-content: center;
+      align-items: center;
     }
 
     .report-section {
@@ -234,11 +235,14 @@
   }
 
   .feedback-box,
-  .feedback-photo,
   .report-section {
     width: 80vw !important;
     max-width: 80vw !important;
     min-width: auto !important;
+  }
+
+  .feedback-photo{
+    width: 80vw !important;
   }
 
   .photo-box img {
@@ -249,24 +253,42 @@
 
   .name-input-row {
     flex-direction: column;
-    align-items: flex-start;
-    width: 80vw;
-    margin: 20px auto;
+    gap: 8px;
+    margin: 24px 0;
   }
 
+  .name-input-row label,
   .name-input-row input {
-    width: 100%;
+    font-size: 14px;
   }
 
   #analyze-btn {
-    width: 80vw;
-    max-width: 300px;
+    font-size: 15px;
+    padding: 10px 20px;
   }
 
   canvas {
     max-width: 100%;
     height: auto !important;
   }
+
+#summary-text {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+#muscle-image-box {
+  display: flex;
+  justify-content: center;
+  gap: 12px; /* 이미지 간 간격 */
+}
+
+#muscle-image-box img {
+  width: 45%;     /* 유연한 너비 (2장 합쳐서 대략 90%) */
+  height: auto;   /* 세로 자동 */
+  object-fit: contain;
+}
+
 }
 
     

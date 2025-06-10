@@ -141,6 +141,27 @@
           z-index: 0;
         }
 
+        @media (max-width: 768px) {
+        #unity-container {
+            width: auto;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #unity-canvas {
+            height: 100vh;
+            width: auto;
+            aspect-ratio: 16 / 10;
+        }
+
+        #unity-footer,
+        #unity-logo-title-footer {
+            display: none;
+        }
+        }        
+
     </style>
 </head>
 <body>
