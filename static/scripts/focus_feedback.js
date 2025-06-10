@@ -3,14 +3,14 @@ const FaceMesh = window.FaceMesh;
 const MAX_CHANGES = {
   "전두근(좌)": 0.04,
   "전두근(우)": 0.04,
-  "안륜근(좌)": 0.013,
-  "안륜근(우)": 0.013,
+  "안륜근(좌)": 0.02,
+  "안륜근(우)": 0.02,
   "추미근": 0.04,
   "상순비익거근": 0.026,
   "대관골근(좌)": 0.06,
   "대관골근(우)": 0.06,
   "익돌근": 0.25,
-  "상순절치근": 0.036,
+  "상순절치근": 0.04,
   "협근": 0.026,
 };
 
@@ -144,7 +144,7 @@ export function calculateMuscleUsageScores(neutralLandmarks, expressionLandmarks
       if (rule.direction === "decrease") diff *= -1;
       if (diff <= 0) continue; // 변화 없음 or 역방향
       
-      if (muscle.includes("안륜근") && diff < 0.03) continue;
+      if (muscle.includes("안륜근") && diff < 0.05) continue;
 
       if (muscle === "협근" && rule.stable) {
         const stableBase = computeDist(neutralLandmarks, rule.stable);

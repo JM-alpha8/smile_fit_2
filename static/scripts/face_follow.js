@@ -137,17 +137,19 @@ function calculateScore() {
         !normUserB[i1] || !normUserB[i2]
       ) {
         console.warn(`[${name}] 랜드마크 누락 - 건너뜀`);
-        continue;
+        totalScore += 5;
+        count++;
       }
-    const teacherDist = calcDistance(normTeacherB[i1], normTeacherB[i2]) - calcDistance(normTeacherA[i1], normTeacherA[i2]);
-    const userDist = calcDistance(normUserB[i1], normUserB[i2]) - calcDistance(normUserA[i1], normUserA[i2]);
+      else {
+        const teacherDist = calcDistance(normTeacherB[i1], normTeacherB[i2]) - calcDistance(normTeacherA[i1], normTeacherA[i2]);
+        const userDist = calcDistance(normUserB[i1], normUserB[i2]) - calcDistance(normUserA[i1], normUserA[i2]);
 
-    const diff = Math.abs(teacherDist - userDist);
-    const sim = 1 - diff / ((Math.abs(teacherDist) + epsilon) * 3);
-    const score = Math.max(0, Math.min(1, sim)) * 10;
+        const diff = Math.abs(teacherDist - userDist);
+        const sim = 1 - diff / ((Math.abs(teacherDist) + epsilon) * 3);
+        const score = Math.max(0, Math.min(1, sim)) * 10;
 
-    totalScore += score;
-    count++;
+        totalScore += score;
+        count++;}
   }
 
   const avgScore = Math.round(totalScore / count);

@@ -96,16 +96,17 @@ async function handleEmotionCapture() {
   console.log("📌 기준 감정:", refResult?.expressions);
   console.log("📌 사용자 감정:", userResult?.expressions);
 
-  if (!refResult || !userResult) {
-    emotionScoreDisplay.innerText = "이번 점수: 분석 실패";
-    await loadNextEmotionImage(); 
-    return;
-    }
+  let score = 0;
 
+  if (!refResult || !userResult) {
+    score = 5}
+
+
+  else{  
   const refVec = Object.values(refResult.expressions);
   const userVec = Object.values(userResult.expressions);
   const sim = cosineSimilarity(refVec, userVec);
-  const score = Math.max(3, Math.min(10, Math.round(sim * 10)));
+  score = Math.max(3, Math.min(10, Math.round(sim * 10)));}
 
   emotionScoreDisplay.innerHTML = `이번 점수: <b>${score} / 10</b>`;
   currentSessionTotalScore_Emotion += score;
