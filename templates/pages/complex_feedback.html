@@ -208,6 +208,19 @@
       max-width: 34vw;
     }
 
+#pie-labels {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  gap: 4px;
+}
+
+#pie-labels li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px; 
+}
+
   }
 
   @media screen and (max-width: 768px) {
@@ -220,7 +233,9 @@
   padding: 24px 0;
 }
 
-
+    .report-section {
+     width: 80%;
+    }
     
 .feedback-box {
   width: 80%;
@@ -347,9 +362,9 @@
       <div class="row-box">
         <div class="feedback-box">
           <h4>가장 많이 사용된 근육 TOP 5</h4>
-          <div style="display: flex; justify-content: center; align-items: center; margin-top: 30px; padding: 0; max-height: 180px;">
+          <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; padding: 0; max-height: 180px;">
             <canvas id="topMusclePieChart" style="max-width: 180px;"></canvas>
-            <ul id="pie-labels" style="margin-left: 40px; list-style: none; padding: 0; text-align: left;"></ul>
+            <ul id="pie-labels"></ul>
           </div>
         </div>
         <div class="feedback-box">
