@@ -197,22 +197,34 @@
       max-width: 34vw;
     }
 
-    .feedback-photo {
-      display: flex;
-      flex: 1 1 40%;
-      align-items: center;
-      gap: 30px;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      padding: 16px 0 16px 0;      
-      min-width: 280px;
-      max-width: 500px;
-    }
+.feedback-photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 16px;
+  width: 100%;
+  max-width: none; /* ✅ 너무 작게 제한하지 않기 */
+  box-sizing: border-box;
+}
 
-    .photo-box{
-      margin:0;
-    }
+.photo-box {
+  width: 50%; /* ✅ 가로로 반반 */
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photo-box img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
     
   }
 
@@ -226,6 +238,7 @@
 
     .report-section {
      width: 80%;
+     margin: 0 auto;
     }
  
   .row-box {
@@ -241,15 +254,29 @@
     min-width: auto !important;
   }
 
-  .feedback-photo{
-    width: 80vw !important;
-  }
+.feedback-photo {
+  display: flex;
+  width: 80vw !important;
+  justify-content: center;
+  gap: 0; /* gap 제거 또는 원하는 만큼 */
+  padding: 0;
+}
 
-  .photo-box img {
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-  }
+.photo-box {
+  width: 50%;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.photo-box img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
 
   .name-input-row {
     flex-direction: column;
@@ -273,7 +300,7 @@
   }
 
 #summary-text {
-  font-size: 16px;
+  font-size: 11px;
   line-height: 1.6;
 }
 
@@ -346,11 +373,11 @@
         <div class="feedback-box feedback-photo">          
           <div class="photo-box">
             <h4>기준 이미지</h4>
-            <img id="ref-photo" height="160" width: auto />
+            <img id="ref-photo"  />
           </div>
           <div class="photo-box">
             <h4>베스트 이미지</h4>
-            <img id="best-photo" height="160" width: auto />
+            <img id="best-photo" />
           </div>       
         </div>
         <div class="feedback-box">
