@@ -144,6 +144,15 @@
   font-size: 14px;
 }
 
+#app {
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+#app.fade-out {
+  opacity: 0;
+}
+
   /* 💻 데스크탑 대응 */
   @media screen and (min-width: 1024px), (hover: hover) and (pointer: fine) {
     header {
@@ -240,10 +249,10 @@
 });
 
 
-    function metalClickSound() {
+    function metalClickSound () {
       const sound = document.getElementById('metal_click');
-      sound.currentTime = 0;
-      sound.play();
+        sound.currentTime = 0;
+        sound.play();
     }
 
     function ClickSound() {
@@ -276,10 +285,11 @@ async function loadPage(route) {
   const path = routes[route];
   if (!path) return;
 
-  // ✅ 기존 페이지 전환 로직 유지
+  const appEl = document.getElementById('app');
+
   if (currentModule?.cleanup) currentModule.cleanup();
-  document.body.classList.remove('loaded');
-  document.body.classList.add('fade-out');
+
+  appEl.classList.add('fade-out');
 
   if (!route.startsWith("face_")) {
     try {
@@ -305,7 +315,7 @@ async function loadPage(route) {
 
       const temp = document.createElement('div');
       temp.innerHTML = html;
-      document.getElementById('app').innerHTML = temp.innerHTML;
+      appEl.innerHTML = temp.innerHTML;
 
       try {
         const version = "1.0.5";
@@ -316,8 +326,7 @@ async function loadPage(route) {
         console.warn(`⚠️ ${route}.js 없음 또는 import 실패`, e);
       }
 
-      document.body.classList.remove('fade-out');
-      document.body.classList.add('loaded');
+      appEl.classList.remove('fade-out');
     } catch (e) {
       console.error('❌ 페이지 로딩 실패:', e);
     }
