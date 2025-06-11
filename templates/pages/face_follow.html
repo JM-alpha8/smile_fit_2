@@ -143,8 +143,9 @@
 
         @media (max-width: 768px) {
         #unity-container {
-            width: auto;
-            height: 100vh;
+            width: 100vw;
+            height: calc(100vw * 0.625); /* 16:10 비율 유지 */
+            max-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
