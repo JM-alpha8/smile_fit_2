@@ -291,9 +291,15 @@
 
   #pie-labels {
     margin-left: 12px;
-    max-width: 100px;
+    max-width: 250px;
     font-size: 13px;
   }
+
+#pie-labels li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px; 
+}
 
   .name-input-row {
     flex-direction: column;
