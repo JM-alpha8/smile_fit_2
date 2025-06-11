@@ -1,4 +1,4 @@
-const CACHE_NAME = "smilefit-cache-v5";  // ✅ 버전 변경 중요!
+const CACHE_NAME = "smilefit-cache-v6";  // ✅ 버전 변경 중요!
 const urlsToCache = [
   "/",
   "/manifest.json",
@@ -24,7 +24,7 @@ self.addEventListener("activate", (event) => {
       Promise.all(
         keyList.map((key) => {
           if (key !== CACHE_NAME) {
-            return caches.delete(key);  // 🔥 이전 캐시 삭제
+            return caches.delete(key);  
           }
         })
       )

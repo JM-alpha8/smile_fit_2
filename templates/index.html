@@ -293,7 +293,7 @@ async function loadPage(route) {
 
   if (!route.startsWith("face_")) {
     try {
-      const version = "1.0.5";
+      const version = "1.0.6";
       const module = await import(`/scripts/${route}.js?v=${version}`);
       currentModule = module;
       if (module?.init) module.init();
@@ -318,7 +318,7 @@ async function loadPage(route) {
       appEl.innerHTML = temp.innerHTML;
 
       try {
-        const version = "1.0.5";
+        const version = "1.0.6";
         const module = await import(`/scripts/${route}.js?v=${version}`);
         currentModule = module;
         if (module?.init) module.init();
