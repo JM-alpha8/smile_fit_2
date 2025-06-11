@@ -5,14 +5,14 @@ const FaceMesh = window.FaceMesh;
 // ✅ 표정별 관련 랜드마크 인덱스 정의
 
 const MAX_CHANGES = {
-  "전두근": 0.04,
-  "안륜근": 0.02,
+  "전두근": 0.035,
+  "안륜근": 0.025,
   "추미근": 0.04,
-  "상순비익거근": 0.026,
-  "대관골근": 0.06,
+  "상순비익거근": 0.1,
+  "대관골근": 0.05,
   "익돌근": 0.25,
   "상순절치근": 0.04,
-  "협근": 0.026,
+  "협근": 0.05,
 };
 
 const MUSCLE_TO_ACTION = {
@@ -31,7 +31,7 @@ const MUSCLE_RULES = {
   "전두근": { points: [334, 386], direction: "increase" },
   "안륜근": { points: [386, 374], direction: "decrease" },
   "추미근": { points: [107, 336], direction: "decrease" },
-  "상순비익거근": { points: [285, 437], direction: "decrease" },
+  "상순비익거근": { points: [463, 437], direction: "decrease" },
   "대관골근": { points: [291, 446], direction: "decrease" },
   "익돌근": { points: [1, 152], direction: "increase" },
   "상순절치근": { points: [61, 291], direction: "decrease" },

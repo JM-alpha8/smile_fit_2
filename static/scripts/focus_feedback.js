@@ -1,17 +1,17 @@
 const FaceMesh = window.FaceMesh;
 
 const MAX_CHANGES = {
-  "전두근(좌)": 0.04,
-  "전두근(우)": 0.04,
-  "안륜근(좌)": 0.02,
-  "안륜근(우)": 0.02,
+  "전두근(좌)": 0.035,
+  "전두근(우)": 0.035,
+  "안륜근(좌)": 0.025,
+  "안륜근(우)": 0.025,
   "추미근": 0.04,
-  "상순비익거근": 0.026,
-  "대관골근(좌)": 0.06,
-  "대관골근(우)": 0.06,
+  "상순비익거근": 0.01,
+  "대관골근(좌)": 0.05,
+  "대관골근(우)": 0.05,
   "익돌근": 0.25,
   "상순절치근": 0.04,
-  "협근": 0.026,
+  "협근": 0.05,
 };
 
 const MUSCLE_RULES = {
@@ -20,7 +20,7 @@ const MUSCLE_RULES = {
   "안륜근(좌)": { points: [386, 374], direction: "decrease" },
   "안륜근(우)": { points: [159, 145], direction: "decrease" },
   "추미근": { points: [107, 336], direction: "decrease" },
-  "상순비익거근": { points: [285, 437], direction: "decrease" },
+  "상순비익거근": { points: [463, 437], direction: "decrease" },
   "대관골근(좌)": { points: [291, 446], direction: "decrease" },
   "대관골근(우)": { points: [61, 226], direction: "decrease" },
   "익돌근": { points: [1, 152], direction: "increase" },
@@ -168,7 +168,7 @@ export function calculateMuscleUsageScores(neutralLandmarks, expressionLandmarks
       count++;
     }
 
-    const percent = count > 0 ? Math.round((total / count) * 100) : 0;
+    const percent = count > 0 ? Math.round((total / 10) * 100) : 0;
     scores[muscle] = percent;
   }
 
