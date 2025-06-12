@@ -200,21 +200,20 @@
 .feedback-photo {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  height: auto;
   gap: 20px;
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid #ccc;
   border-radius: 12px;
   padding: 16px;
-  width: 100%;
-  max-width: none; /* ✅ 너무 작게 제한하지 않기 */
   box-sizing: border-box;
 }
 
 .photo-box {
-  width: 50%; /* ✅ 가로로 반반 */
-  padding: 8px;
+  width: 50%;
   box-sizing: border-box;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -222,7 +221,7 @@
 
 .photo-box img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
 }
     
@@ -256,16 +255,21 @@
 
 .feedback-photo {
   display: flex;
-  width: 80vw !important;
   justify-content: center;
-  gap: 0; /* gap 제거 또는 원하는 만큼 */
-  padding: 0;
+  align-items: stretch;
+  height: auto;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .photo-box {
   width: 50%;
-  padding: 8px;
   box-sizing: border-box;
+  padding: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -273,9 +277,8 @@
 
 .photo-box img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
-  border-radius: 8px;
 }
 
   .name-input-row {
