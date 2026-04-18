@@ -3,6 +3,17 @@
 안면근육 운동과 표정 훈련을 위한 Flask 기반 웹앱입니다.  
 웹캠을 활용해 사용자의 표정 수행을 확인하고, 운동 결과를 시각적으로 보여주며, 일부 결과 페이지에서는 Gemini 기반 피드백을 제공합니다.
 
+## 📸 Screenshots
+
+### Main Page
+![main](./screenshots/main.png)
+
+### Game Mode
+![game](./screenshots/game.png)
+
+### Feedback
+![feedback](./screenshots/feedback.png)
+
 ## 프로젝트 개요
 
 SMILE FIT은 안면근육 재활 및 표정 훈련을 웹 환경에서 수행할 수 있도록 만든 프로젝트입니다.  
